@@ -62,11 +62,11 @@ Properly detect strings, comments and attribute access."
 
 (defun company-anaconda-meta (candidate)
   "Return short documentation string for chosen CANDIDATE."
-  (company-anaconda-get-property :short_doc candidate))
+  (company-anaconda-get-property :info candidate))
 
 (defun company-anaconda-annotation (candidate)
   "Return annotation string for chosen CANDIDATE."
-  (let ((annotation (company-anaconda-get-property :annotation candidate)))
+  (let ((annotation (company-anaconda-get-property :type candidate)))
     (if company-anaconda-compact-annotation
         (substring annotation 0 1)
       annotation)))
