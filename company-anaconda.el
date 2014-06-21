@@ -33,14 +33,12 @@
 
 (defun company-anaconda-init ()
   "Initialize company-anaconda buffer."
-  (anaconda-mode-start-node)
   (setq-local company-tooltip-align-annotations t))
 
 (defun company-anaconda-prefix ()
   "Grab prefix at point.
 Properly detect strings, comments and attribute access."
   (and (eq major-mode 'python-mode)
-       (anaconda-mode-running-p)
        (not (company-in-string-or-comment))
        (or (company-grab-symbol-cons "\\." 1)
            'stop)))
