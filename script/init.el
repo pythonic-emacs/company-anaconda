@@ -1,3 +1,9 @@
+;;; init.el --- minimal company-anaconda configuration
+
+;;; Commentary:
+
+;;; Code:
+
 (require 'cask)
 
 (let ((source-directory (locate-dominating-file load-file-name "Cask")))
@@ -5,8 +11,6 @@
   (add-to-list 'load-path source-directory))
 
 ;; Anaconda settings.
-
-(setq anaconda-mode-port 8887)
 
 (setq anaconda-mode-debug t)
 
@@ -19,3 +23,7 @@
 ;; Pyenv settings.
 
 (pyenv-mode)
+
+(provide 'init)
+
+;;; init.el ends here
