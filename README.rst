@@ -1,5 +1,10 @@
-Company anaconda
-================
+.. |melpa| image:: http://melpa.org/packages/company-anaconda-badge.svg
+    :target: http://melpa.org/#/company-anaconda
+    :alt: Melpa
+
+========================
+Company anaconda |melpa|
+========================
 
 Anaconda_ backend for company-mode_.
 
