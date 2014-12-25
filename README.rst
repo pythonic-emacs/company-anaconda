@@ -2,9 +2,11 @@
     :target: http://melpa.org/#/company-anaconda
     :alt: Melpa
 
-========================
-Company anaconda |melpa|
-========================
+================
+Company anaconda
+================
+
+|melpa|
 
 Anaconda_ backend for company-mode_.
 
