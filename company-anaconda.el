@@ -40,7 +40,7 @@
 (defun company-anaconda-prefix ()
   "Grab prefix at point.
 Properly detect strings, comments and attribute access."
-  (and (eq major-mode 'python-mode)
+  (and anaconda-mode
        (not (company-in-string-or-comment))
        (or (company-grab-symbol-cons "\\." 1)
            'stop)))
