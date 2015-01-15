@@ -1,8 +1,8 @@
 ;;; company-anaconda.el --- Anaconda backend for company-mode
 
-;; Copyright (C) 2013-2015 by Malyshev Artem
+;; Copyright (C) 2013-2015 by Artem Malyshev
 
-;; Author: Malyshev Artem <proofit404@gmail.com>
+;; Author: Artem Malyshev <proofit404@gmail.com>
 ;; URL: https://github.com/proofit404/anaconda-mode
 ;; Version: 0.1.0
 ;; Package-Requires: ((company "0.8.0") (anaconda-mode "0.1.0") (cl-lib "0.5.0"))
