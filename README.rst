@@ -28,6 +28,12 @@ Add ``company-anaconda`` to allowed ``company-mode`` backends list
 
     (add-to-list 'company-backends 'company-anaconda)
 
+Enable ``anaconda-mode`` in buffers you want to use ``company-anaconda``
+
+.. code:: lisp
+
+    (add-hook 'python-mode-hook 'anaconda-mode)
+
 .. _Anaconda: https://github.com/proofit404/anaconda-mode
 .. _company-mode: http://company-mode.github.io/
 .. _Melpa: http://melpa.milkbox.net/
