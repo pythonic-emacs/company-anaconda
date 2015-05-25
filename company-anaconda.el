@@ -91,6 +91,7 @@ See `company-backends' for more info about COMMAND and ARG."
     (meta (company-anaconda-meta arg))
     (annotation (company-anaconda-annotation arg))
     (location (company-anaconda-location arg))
+    (ignore-case t)
     (sorted t)))
 
 (provide 'company-anaconda)
