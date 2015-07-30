@@ -26,7 +26,9 @@ Add ``company-anaconda`` to allowed ``company-mode`` backends list
 
 .. code:: lisp
 
-    (add-to-list 'company-backends 'company-anaconda)
+    (eval-after-load "company"
+     '(progn
+       (add-to-list 'company-backends 'company-anaconda)))
 
 Enable ``anaconda-mode`` in buffers you want to use ``company-anaconda``
 
