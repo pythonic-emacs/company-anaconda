@@ -1,6 +1,9 @@
 (source melpa)
 
-(package-file "company-anaconda.el")
+(depends-on "company" "0.8.0")
+(depends-on "anaconda-mode"
+            :git "https://github.com/proofit404/anaconda-mode"
+            :branch "feature/pypi")
 
 (development
  (depends-on "cask")
