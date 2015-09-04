@@ -5,7 +5,7 @@
 ;; Author: Artem Malyshev <proofit404@gmail.com>
 ;; URL: https://github.com/proofit404/anaconda-mode
 ;; Version: 0.1.0
-;; Package-Requires: ((company "0.8.0") (anaconda-mode "0.1.0") (cl-lib "0.5.0"))
+;; Package-Requires: ((company "0.8.0") (anaconda-mode "0.1.0") (cl-lib "0.5.0") (dash "2.6.0") (s "1.9"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 (require 'cl-lib)
 (require 'company)
 (require 'anaconda-mode)
+(require 'dash)
+(require 's)
 
 (defun company-anaconda-prefix ()
   "Grab prefix at point.
@@ -48,19 +50,25 @@ Apply passed CALLBACK to extracted collection."
 
 (defun company-anaconda-doc-buffer (candidate)
   "Return documentation buffer for chosen CANDIDATE."
-  )
+  (--when-let (get-text-property 0 'docstring candidate)
+    (anaconda-mode-with-view-buffer
+     (insert it))))
 
 (defun company-anaconda-meta (candidate)
   "Return short documentation string for chosen CANDIDATE."
-  )
+  (--when-let (get-text-property 0 'docstring candidate)
+    (car (s-split-up-to "\n" it 1))))
 
 (defun company-anaconda-annotation (candidate)
   "Return annotation string for chosen CANDIDATE."
-  )
+  (--when-let (get-text-property 0 'description candidate)
+    (concat "<" it ">")))
 
 (defun company-anaconda-location (candidate)
   "Return location (path . line) for chosen CANDIDATE."
-  )
+  (-when-let* ((module-path (get-text-property 0 'module-path candidate))
+               (line (get-text-property 0 'line candidate)))
+    (cons module-path line)))
 
 ;;;###autoload
 (defun company-anaconda (command &optional arg)
@@ -73,10 +81,10 @@ See `company-backends' for more info about COMMAND and ARG."
     (candidates (cons :async
                       (lambda (callback)
                         (company-anaconda-candidates callback))))
-    ;; (doc-buffer (company-anaconda-doc-buffer arg))
-    ;; (meta (company-anaconda-meta arg))
-    ;; (annotation (company-anaconda-annotation arg))
-    ;; (location (company-anaconda-location arg))
+    (doc-buffer (company-anaconda-doc-buffer arg))
+    (meta (company-anaconda-meta arg))
+    (annotation (company-anaconda-annotation arg))
+    (location (company-anaconda-location arg))
     (ignore-case t)
     (sorted t)))
 
