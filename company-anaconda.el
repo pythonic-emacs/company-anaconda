@@ -50,14 +50,16 @@ Apply passed CALLBACK to extracted collection."
 
 (defun company-anaconda-doc-buffer (candidate)
   "Return documentation buffer for chosen CANDIDATE."
-  (--when-let (get-text-property 0 'docstring candidate)
-    (anaconda-mode-with-view-buffer
-     (insert it))))
+  (let ((docstring (get-text-property 0 'docstring candidate)))
+    (unless (s-blank? docstring)
+      (anaconda-mode-with-view-buffer
+       (insert docstring)))))
 
 (defun company-anaconda-meta (candidate)
   "Return short documentation string for chosen CANDIDATE."
-  (--when-let (get-text-property 0 'docstring candidate)
-    (car (s-split-up-to "\n" it 1))))
+  (let ((docstring (get-text-property 0 'docstring candidate)))
+    (unless (s-blank? docstring)
+      (car (s-split-up-to "\n" docstring 1)))))
 
 (defun company-anaconda-annotation (candidate)
   "Return annotation string for chosen CANDIDATE."
