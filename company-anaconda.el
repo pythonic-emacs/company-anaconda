@@ -64,7 +64,7 @@ Apply passed CALLBACK to extracted collection."
 (defun company-anaconda-annotation (candidate)
   "Return annotation string for chosen CANDIDATE."
   (--when-let (get-text-property 0 'description candidate)
-    (concat "<" it ">")))
+    (concat "<" (s-left 1 it) ">")))
 
 (defun company-anaconda-location (candidate)
   "Return location (path . line) for chosen CANDIDATE."
