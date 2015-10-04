@@ -32,6 +32,50 @@
 (require 'dash)
 (require 's)
 
+(defgroup company-anaconda nil
+  "Company back-end for Python code completion."
+  :group 'programming)
+
+(defcustom company-anaconda-annotation-function
+  'company-anaconda-description-in-chevrons
+  "Function that returns candidate annotations.
+
+This function takes a single argument, a completion candidate
+produced by anaconda-mode.  It should return an annotation string
+to be displayed by company-mode as the annotation for this
+candidate, or nil if no annotation should be displayed.
+
+The candidate is a string, a possible completion.  The candidate
+may also have some text properties containing additional
+information.  These properties are:
+
+- description: Jedi's description, typically the type of
+  completion optionally followed by a fully-qualified name for
+  the candidate.  For example, \"class: foo.bar.Baz\" or
+  \"statement\".
+
+- module-path: The path to the file that contains this candidate.
+
+- line: The line within that file where the candidate is defined.
+
+- docstring: The candidate's docstring.
+
+You can retrieve any of these properties with
+`get-text-property', such as
+\(get-text-property 0 'description candidate).  Bear in mind that
+any of these properties may be absent for any candidate."
+  :group 'company-anaconda
+  :type 'function)
+
+(defun company-anaconda-description-in-chevrons (candidate)
+  "Return the description property of CANDIDATE inside chevrons.
+
+This will return a string such as,
+\"<function: mod.Klass.a_function>\".  This is primarily for use
+as a possible value for `company-anaconda-annotation-function'."
+  (--when-let (get-text-property 0 'description candidate)
+    (concat "<" it ">")))
+
 (defun company-anaconda-prefix ()
   "Grab prefix at point.
 Properly detect strings, comments and attribute access."
@@ -61,11 +105,6 @@ Apply passed CALLBACK to extracted collection."
     (unless (s-blank? docstring)
       (car (s-split-up-to "\n" docstring 1)))))
 
-(defun company-anaconda-annotation (candidate)
-  "Return annotation string for chosen CANDIDATE."
-  (--when-let (get-text-property 0 'description candidate)
-    (concat "<" it ">")))
-
 (defun company-anaconda-location (candidate)
   "Return location (path . line) for chosen CANDIDATE."
   (-when-let* ((module-path (get-text-property 0 'module-path candidate))
@@ -85,7 +124,7 @@ See `company-backends' for more info about COMMAND and ARG."
                         (company-anaconda-candidates callback))))
     (doc-buffer (company-anaconda-doc-buffer arg))
     (meta (company-anaconda-meta arg))
-    (annotation (company-anaconda-annotation arg))
+    (annotation (funcall company-anaconda-annotation-function arg))
     (location (company-anaconda-location arg))
     (ignore-case t)
     (sorted t)))
