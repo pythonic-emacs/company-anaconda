@@ -76,6 +76,11 @@ as a possible value for `company-anaconda-annotation-function'."
   (--when-let (get-text-property 0 'description candidate)
     (concat "<" it ">")))
 
+(defcustom company-anaconda-case-insensitive t
+  "Use case insensitive candidates match."
+  :group 'company-anaconda
+  :type 'boolean)
+
 (defun company-anaconda-prefix ()
   "Grab prefix at point.
 Properly detect strings, comments and attribute access."
@@ -126,7 +131,7 @@ See `company-backends' for more info about COMMAND and ARG."
     (meta (company-anaconda-meta arg))
     (annotation (funcall company-anaconda-annotation-function arg))
     (location (company-anaconda-location arg))
-    (ignore-case t)
+    (ignore-case company-anaconda-case-insensitive)
     (sorted t)))
 
 (provide 'company-anaconda)
