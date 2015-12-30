@@ -117,7 +117,7 @@ Apply passed CALLBACK to extracted collection."
     (cons module-path line)))
 
 ;;;###autoload
-(defun company-anaconda (command &optional arg)
+(defun company-anaconda (command &optional arg &rest _args)
   "Anaconda backend for company-mode.
 See `company-backends' for more info about COMMAND and ARG."
   (interactive (list 'interactive))
