@@ -28,6 +28,7 @@
 
 (require 'cl-lib)
 (require 'company)
+(require 'company-capf)
 (require 'anaconda-mode)
 (require 'dash)
 (require 's)
@@ -86,8 +87,11 @@ as a possible value for `company-anaconda-annotation-function'."
 Properly detect strings, comments and attribute access."
   (and anaconda-mode
        (not (company-in-string-or-comment))
-       (or (company-grab-symbol-cons "\\." 1)
-           'stop)))
+       (--if-let (company-capf 'prefix)
+           (if (looking-back "\\." (- (point) 1))
+               (cons it t)
+             it)
+         'stop)))
 
 (defun company-anaconda-candidates (callback)
   "Obtain candidates list from anaconda asynchronously.
