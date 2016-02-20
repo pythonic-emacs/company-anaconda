@@ -36,6 +36,15 @@ Enable ``anaconda-mode`` in buffers you want to use ``company-anaconda``
 
     (add-hook 'python-mode-hook 'anaconda-mode)
 
+If you want to see ``anaconda-mode`` completions together with ones
+comes from inferior python process use company grouped backend istead:
+
+.. code:: lisp
+
+    (eval-after-load "company"
+     '(progn
+       (add-to-list 'company-backends '(company-anaconda company-capf))))
+
 Customization
 -------------
 
