@@ -93,13 +93,23 @@ Properly detect strings, comments and attribute access."
              it)
          'stop)))
 
-(defun company-anaconda-candidates (callback)
+(defun company-anaconda-candidates (callback given-prefix)
   "Obtain candidates list from anaconda asynchronously.
-Apply passed CALLBACK to extracted collection."
-  (anaconda-mode-call "complete"
-                      (lambda (result)
-                        (funcall callback
-                                 (anaconda-mode-complete-extract-names result)))))
+Apply passed CALLBACK to extracted collection.  GIVEN-PREFIX is
+the difference between default `company-grab-symbol'
+and (company-capf 'prefix) result."
+  (anaconda-mode-call
+   "complete"
+   (lambda (result)
+     (funcall callback
+	      (--map (let ((candidate (s-concat given-prefix it)))
+		       (dolist (property '(description module-path line docstring) nil)
+			 (put-text-property
+			  0 1 property
+			  (get-text-property 0 property it)
+			  candidate))
+		       candidate)
+		     (anaconda-mode-complete-extract-names result))))))
 
 (defun company-anaconda-doc-buffer (candidate)
   "Return documentation buffer for chosen CANDIDATE."
@@ -129,8 +139,9 @@ See `company-backends' for more info about COMMAND and ARG."
     (interactive (company-begin-backend 'company-anaconda))
     (prefix (company-anaconda-prefix))
     (candidates (cons :async
-                      (lambda (callback)
-                        (company-anaconda-candidates callback))))
+                      (let ((given-prefix (s-chop-suffix (company-grab-symbol) arg)))
+			(lambda (callback)
+			  (company-anaconda-candidates callback given-prefix)))))
     (doc-buffer (company-anaconda-doc-buffer arg))
     (meta (company-anaconda-meta arg))
     (annotation (funcall company-anaconda-annotation-function arg))
