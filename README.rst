@@ -43,7 +43,7 @@ comes from inferior python process use company grouped backend istead:
 
     (eval-after-load "company"
      '(progn
-       (add-to-list 'company-backends '(company-anaconda company-capf))))
+       (add-to-list 'company-backends '(company-anaconda :with company-capf))))
 
 Customization
 -------------
