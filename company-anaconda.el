@@ -87,7 +87,8 @@ as a possible value for `company-anaconda-annotation-function'."
 Properly detect strings, comments and attribute access."
   (and anaconda-mode
        (not (company-in-string-or-comment))
-       (--if-let (company-capf 'prefix)
+       (--if-let (or (company-capf 'prefix)
+                     (company-grab-symbol))
            (if (looking-back "\\." (- (point) 1))
                (cons it t)
              it)
@@ -102,14 +103,17 @@ and (company-capf 'prefix) result."
    "complete"
    (lambda (result)
      (funcall callback
-	      (--map (let ((candidate (s-concat given-prefix it)))
-		       (dolist (property '(description module-path line docstring) nil)
-			 (put-text-property
-			  0 1 property
-			  (get-text-property 0 property it)
-			  candidate))
-		       candidate)
-		     (anaconda-mode-complete-extract-names result))))))
+	      (let ((results (anaconda-mode-complete-extract-names result)))
+                (if (s-blank? given-prefix)
+                    results
+                  (--map (let ((candidate (s-concat given-prefix it)))
+                           (dolist (property '(description module-path line docstring) nil)
+                             (put-text-property
+                              0 1 property
+                              (get-text-property 0 property it)
+                              candidate))
+                           candidate)
+                         results)))))))
 
 (defun company-anaconda-doc-buffer (candidate)
   "Return documentation buffer for chosen CANDIDATE."
