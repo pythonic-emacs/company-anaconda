@@ -28,7 +28,6 @@
 
 (require 'cl-lib)
 (require 'company)
-(require 'company-capf)
 (require 'anaconda-mode)
 (require 'dash)
 (require 's)
@@ -87,8 +86,27 @@ as a possible value for `company-anaconda-annotation-function'."
 Properly detect strings, comments and attribute access."
   (and anaconda-mode
        (not (company-in-string-or-comment))
-       (--if-let (or (company-capf 'prefix)
-                     (company-grab-symbol))
+       (--if-let (when (or (not (char-after))
+                           (memq (char-syntax (char-after)) '(?w ?_)))
+                   (let* ((start
+                           (save-excursion
+                             (with-syntax-table python-dotty-syntax-table
+                               (let* ((paren-depth (car (syntax-ppss)))
+                                      (syntax-string "w_")
+                                      (syntax-list (string-to-syntax syntax-string)))
+                                 (while (member
+                                         (car (syntax-after (1- (point)))) syntax-list)
+                                   (skip-syntax-backward syntax-string)
+                                   (when (or (equal (char-before) ?\))
+                                             (equal (char-before) ?\"))
+                                     (forward-char -1))
+                                   (while (or
+                                           (> (car (syntax-ppss)) paren-depth)
+                                           (python-syntax-context 'string))
+                                     (forward-char -1)))
+                                 (point)))))
+                          (end (point)))
+                     (buffer-substring-no-properties start end)))
            (if (looking-back "\\." (- (point) 1))
                (cons it t)
              it)
