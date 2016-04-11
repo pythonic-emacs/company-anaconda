@@ -87,7 +87,9 @@ Properly detect strings, comments and attribute access."
   (and anaconda-mode
        (not (company-in-string-or-comment))
        (--if-let (when (or (not (char-after))
-                           (memq (char-syntax (char-after)) '(?w ?_)))
+                           (memq (char-syntax (char-after)) '(?w ?_))
+                           ;; TODO: fix "from xxx.yyy <C-tab>"
+                           (looking-at "\\_>"))
                    (let* ((start
                            (save-excursion
                              (with-syntax-table python-dotty-syntax-table
