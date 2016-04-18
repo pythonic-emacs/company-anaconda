@@ -86,10 +86,8 @@ as a possible value for `company-anaconda-annotation-function'."
 Properly detect strings, comments and attribute access."
   (and anaconda-mode
        (not (company-in-string-or-comment))
-       (--if-let (when (or (not (char-after))
-                           (memq (char-syntax (char-after)) '(?w ?_))
-                           ;; TODO: fix "from xxx.yyy <C-tab>"
-                           (looking-at "\\_>"))
+       (--if-let (when (or (looking-at "\\_>")
+                           (looking-back "\\." (- (point) 1)))
                    (let* ((start
                            (save-excursion
                              (with-syntax-table python-dotty-syntax-table
