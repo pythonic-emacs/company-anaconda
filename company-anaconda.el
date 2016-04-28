@@ -88,25 +88,12 @@ Properly detect strings, comments and attribute access."
        (not (company-in-string-or-comment))
        (--if-let (when (or (looking-at "\\_>")
                            (looking-back "\\." (- (point) 1)))
-                   (let* ((start
-                           (save-excursion
-                             (with-syntax-table python-dotty-syntax-table
-                               (let* ((paren-depth (car (syntax-ppss)))
-                                      (syntax-string "w_")
-                                      (syntax-list (string-to-syntax syntax-string)))
-                                 (while (member
-                                         (car (syntax-after (1- (point)))) syntax-list)
-                                   (skip-syntax-backward syntax-string)
-                                   (when (or (equal (char-before) ?\))
-                                             (equal (char-before) ?\"))
-                                     (forward-char -1))
-                                   (while (or
-                                           (> (car (syntax-ppss)) paren-depth)
-                                           (python-syntax-context 'string))
-                                     (forward-char -1)))
-                                 (point)))))
-                          (end (point)))
-                     (buffer-substring-no-properties start end)))
+                   (save-match-data
+                     (let ((line (buffer-substring-no-properties
+                                  (line-beginning-position)
+                                  (point))))
+                       (string-match "[a-zA-Z][a-zA-Z0-9_.]*\\'" line)
+                       (match-string 0 line))))
            (if (looking-back "\\." (- (point) 1))
                (cons it t)
              it)
