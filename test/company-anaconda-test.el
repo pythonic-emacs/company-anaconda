@@ -7,7 +7,10 @@
 (defvar counter 0)
 
 (defvar fixtures
-  '(("foo" "foo")))
+  '(("foo" "foo")
+    ("def test(x=1" 'stop)
+    ("1234." 'stop)
+    ("\"test\"." '("\"test\"." . t))))
 
 (dolist (fixture fixtures)
   (cl-destructuring-bind (content expected)
@@ -19,7 +22,7 @@
           (goto-char (point-max))
           (python-mode)
           (anaconda-mode)
-          (should (string= ,expected (company-anaconda 'prefix))))))))
+          (should (equal ,expected (company-anaconda 'prefix))))))))
 
 (provide 'company-anaconda-test)
 
