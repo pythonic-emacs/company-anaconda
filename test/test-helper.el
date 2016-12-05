@@ -12,6 +12,11 @@
 
 (undercover "company-anaconda.el")
 
+(setq python-indent-guess-indent-offset nil)
+
+(require 'cl-lib)
+(require 'company-anaconda)
+
 (provide 'test-helper)
 
 ;;; test-helper.el ends here
