@@ -10,7 +10,8 @@
   '(("foo" "foo")
     ("def test(x=1" 'stop)
     ("1234." 'stop)
-    ("\"test\"." '("\"test\"." . t))))
+    ("\"test\"." '("\"test\"." . t))
+    ("threads.deferToThread()." '("threads.deferToThread()." . t))))
 
 (dolist (fixture fixtures)
   (cl-destructuring-bind (content expected)
