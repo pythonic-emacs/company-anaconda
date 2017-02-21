@@ -17,6 +17,4 @@
 (require 'cl-lib)
 (require 'company-anaconda)
 
-(provide 'test-helper)
-
 ;;; test-helper.el ends here
