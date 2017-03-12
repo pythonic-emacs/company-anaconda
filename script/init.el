@@ -18,6 +18,4 @@
 
 (add-hook 'python-mode-hook 'anaconda-mode)
 
-(provide 'init)
-
 ;;; init.el ends here
