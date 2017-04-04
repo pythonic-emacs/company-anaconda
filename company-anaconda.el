@@ -74,7 +74,7 @@ This will return a string such as,
 \"<function: mod.Klass.a_function>\".  This is primarily for use
 as a possible value for `company-anaconda-annotation-function'."
   (--when-let (get-text-property 0 'description candidate)
-    (concat "<" it ">")))
+    (concat "<" (s-replace "\n" "" it) ">")))
 
 (defcustom company-anaconda-case-insensitive t
   "Use case insensitive candidates match."
