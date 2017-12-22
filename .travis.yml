@@ -1,0 +1,20 @@
+language: emacs-lisp
+matrix:
+  fast_finish: true
+env:
+  global:
+    - PATH=$HOME/.evm/bin:$HOME/.cask/bin:$PATH
+  matrix:
+    - EVM_EMACS=emacs-24.3-travis
+    - EVM_EMACS=emacs-24.4-travis
+    - EVM_EMACS=emacs-24.5-travis
+    - EVM_EMACS=emacs-25.1-travis
+before_install:
+  - git clone https://github.com/rejeep/evm $HOME/.evm
+  - git clone https://github.com/cask/cask $HOME/.cask
+  - evm config path /tmp
+install:
+  - evm install $EVM_EMACS --use
+  - cask install
+script:
+  - cask exec ert-runner

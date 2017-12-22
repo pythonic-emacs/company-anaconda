@@ -92,8 +92,8 @@ Properly detect strings, comments and attribute access."
                      (let ((line (buffer-substring-no-properties
                                   (line-beginning-position)
                                   (point))))
-                       (string-match "[a-zA-Z_][a-zA-Z0-9_.]*\\'" line)
-                       (match-string 0 line))))
+                       (when (string-match "\\(?:[a-zA-Z_][a-zA-Z0-9_.]*\\|\"[^\"]*\".\\)\\'" line)
+                         (match-string 0 line)))))
            (if (looking-back "\\." (- (point) 1))
                (cons it t)
              it)
