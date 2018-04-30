@@ -26,9 +26,10 @@
 
 ;;; Code:
 
-(require 'cl-lib)
-(require 'company)
 (require 'anaconda-mode)
+(require 'company)
+(require 'python)
+(require 'cl-lib)
 (require 'dash)
 (require 's)
 
@@ -86,18 +87,27 @@ as a possible value for `company-anaconda-annotation-function'."
 Properly detect strings, comments and attribute access."
   (and anaconda-mode
        (not (company-in-string-or-comment))
-       (--if-let (when (or (looking-at "\\_>")
-                           (looking-back "\\." (- (point) 1)))
-                   (save-match-data
-                     (let ((line (buffer-substring-no-properties
-                                  (line-beginning-position)
-                                  (point))))
-                       (when (string-match "\\(?:[a-zA-Z_][a-zA-Z0-9_.]*\\|\"[^\"]*\".\\)\\'" line)
-                         (match-string 0 line)))))
-           (if (looking-back "\\." (- (point) 1))
-               (cons it t)
-             it)
-         'stop)))
+       (let* ((line-start (line-beginning-position))
+              (start
+               (save-excursion
+                 (if (not (re-search-backward
+                           (python-rx
+                            (or whitespace open-paren close-paren string-delimiter))
+                           line-start
+                           t 1))
+                     line-start
+                   (forward-char (length (match-string-no-properties 0)))
+                   (point))))
+              (symbol (buffer-substring-no-properties start (point))))
+         (if (s-blank-p symbol)
+             (if (string-match-p
+                  (rx (* space) word-start (or "from" "import") word-end space)
+                  (buffer-substring-no-properties line-start (point)))
+                 (buffer-substring-no-properties line-start (point))
+               'stop)
+           (if (s-ends-with-p "." symbol)
+               (cons symbol t)
+             symbol)))))
 
 (defun company-anaconda-candidates (callback given-prefix)
   "Obtain candidates list from anaconda asynchronously.
