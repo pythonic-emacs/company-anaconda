@@ -38,44 +38,10 @@
   :group 'programming)
 
 (defcustom company-anaconda-annotation-function
-  'company-anaconda-description-in-chevrons
-  "Function that returns candidate annotations.
-
-This function takes a single argument, a completion candidate
-produced by anaconda-mode.  It should return an annotation string
-to be displayed by company-mode as the annotation for this
-candidate, or nil if no annotation should be displayed.
-
-The candidate is a string, a possible completion.  The candidate
-may also have some text properties containing additional
-information.  These properties are:
-
-- description: Jedi's description, typically the type of
-  completion optionally followed by a fully-qualified name for
-  the candidate.  For example, \"class: foo.bar.Baz\" or
-  \"statement\".
-
-- module-path: The path to the file that contains this candidate.
-
-- line: The line within that file where the candidate is defined.
-
-- docstring: The candidate's docstring.
-
-You can retrieve any of these properties with
-`get-text-property', such as
-\(get-text-property 0 'description candidate).  Bear in mind that
-any of these properties may be absent for any candidate."
+  'company-anaconda-annotation
+  "Function that returns candidate annotations."
   :group 'company-anaconda
   :type 'function)
-
-(defun company-anaconda-description-in-chevrons (candidate)
-  "Return the description property of CANDIDATE inside chevrons.
-
-This will return a string such as,
-\"<function: mod.Klass.a_function>\".  This is primarily for use
-as a possible value for `company-anaconda-annotation-function'."
-  (--when-let (get-text-property 0 'description candidate)
-    (concat "<" it ">")))
 
 (defcustom company-anaconda-case-insensitive t
   "Use case insensitive candidates match."
@@ -83,8 +49,7 @@ as a possible value for `company-anaconda-annotation-function'."
   :type 'boolean)
 
 (defun company-anaconda-prefix ()
-  "Grab prefix at point.
-Properly detect strings, comments and attribute access."
+  "Grab prefix at point."
   (and anaconda-mode
        (not (company-in-string-or-comment))
        (let* ((line-start (line-beginning-position))
@@ -110,43 +75,39 @@ Properly detect strings, comments and attribute access."
              symbol)))))
 
 (defun company-anaconda-candidates (callback given-prefix)
-  "Obtain candidates list from anaconda asynchronously.
-Apply passed CALLBACK to extracted collection.  GIVEN-PREFIX is
-the difference between default `company-grab-symbol'
-and (company-capf 'prefix) result."
+  "Pass candidates list for GIVEN-PREFIX to the CALLBACK asynchronously."
   (anaconda-mode-call
-   "complete"
+   "company_complete"
    (lambda (result)
      (funcall callback
-	      (let ((results (anaconda-mode-complete-extract-names result)))
-                (if (s-blank? given-prefix)
-                    results
-                  (--map (let ((candidate (s-concat given-prefix it)))
-                           (dolist (property '(description module-path line docstring) nil)
-                             (put-text-property
-                              0 1 property
-                              (get-text-property 0 property it)
-                              candidate))
-                           candidate)
-                         results)))))))
+	      (--map
+               (let ((candidate (s-concat given-prefix (aref it 0))))
+                 (put-text-property 0 1 'struct it candidate)
+                 candidate)
+               result)))))
+
+(defun company-anaconda-annotation (candidate)
+  "Return the description property of CANDIDATE inside chevrons."
+  (--when-let (aref (get-text-property 0 'struct candidate) 1)
+    (concat "<" it ">")))
 
 (defun company-anaconda-doc-buffer (candidate)
   "Return documentation buffer for chosen CANDIDATE."
-  (let ((docstring (get-text-property 0 'docstring candidate)))
+  (let ((docstring (aref (get-text-property 0 'struct candidate) 2)))
     (unless (s-blank? docstring)
-      (anaconda-mode-with-view-buffer
-       (insert docstring)))))
+      (anaconda-mode-documentation-view (vector (vector "" docstring))))))
 
 (defun company-anaconda-meta (candidate)
   "Return short documentation string for chosen CANDIDATE."
-  (let ((docstring (get-text-property 0 'docstring candidate)))
+  (let ((docstring (aref (get-text-property 0 'struct candidate) 2)))
     (unless (s-blank? docstring)
       (car (s-split-up-to "\n" docstring 1)))))
 
 (defun company-anaconda-location (candidate)
   "Return location (path . line) for chosen CANDIDATE."
-  (-when-let* ((module-path (get-text-property 0 'module-path candidate))
-               (line (get-text-property 0 'line candidate)))
+  (-when-let* ((struct (get-text-property 0 'struct candidate))
+               (module-path (aref struct 3))
+               (line (aref struct 4)))
     (cons module-path line)))
 
 ;;;###autoload
