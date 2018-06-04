@@ -52,6 +52,8 @@
   "Grab prefix at point."
   (and anaconda-mode
        (not (company-in-string-or-comment))
+       (or (looking-at "\\_>")
+           (looking-back "\\." (- (point) 1)))
        (let* ((line-start (line-beginning-position))
               (start
                (save-excursion
