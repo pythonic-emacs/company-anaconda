@@ -121,7 +121,7 @@
 (defun company-anaconda-location (candidate)
   "Return location (path . line) for chosen CANDIDATE."
   (-when-let* ((struct (get-text-property 0 'struct candidate))
-               (module-path (aref struct 3))
+               (module-path (pythonic-real-file-name (aref struct 3)))
                (line (aref struct 4)))
     (cons module-path line)))
 
