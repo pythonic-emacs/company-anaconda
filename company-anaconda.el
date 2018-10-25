@@ -53,11 +53,12 @@
   (or
    ;; At the end of the symbol, but not the end of int number
    (and (looking-at "\\_>")
-	(not (looking-back "\\_<[[:digit:]]+" (line-beginning-position))))
+        (not (looking-back "\\_<\\(0[bo]\\)?[[:digit:]]+" (line-beginning-position)))
+        (not (looking-back "\\_<0x[[:xdigit:]]+" (line-beginning-position))))
    ;; After the dot, but not when it's a dot after int number
    ;; Although identifiers like "foo1.", "foo111.", or "foo1baz2." are ok
    (and (looking-back "\\." (- (point) 1))
-	(not (looking-back "\\_<[[:digit:]]+\\." (line-beginning-position))))
+        (not (looking-back "\\_<[[:digit:]]+\\." (line-beginning-position))))
    ;; After dot in float constant like "1.1." or ".1."
    (or (looking-back "\\_<[[:digit:]]+\\.[[:digit:]]+\\." (line-beginning-position))
        (looking-back "\\.[[:digit:]]+\\." (line-beginning-position)))))
