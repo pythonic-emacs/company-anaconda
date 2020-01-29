@@ -50,18 +50,21 @@
 
 (defun company-anaconda-at-the-end-of-identifier ()
   "Check if the cursor at the end of completable identifier."
-  (or
-   ;; At the end of the symbol, but not the end of int number
-   (and (looking-at "\\_>")
-        (not (looking-back "\\_<\\(0[bo]\\)?[[:digit:]]+" (line-beginning-position)))
-        (not (looking-back "\\_<0x[[:xdigit:]]+" (line-beginning-position))))
-   ;; After the dot, but not when it's a dot after int number
-   ;; Although identifiers like "foo1.", "foo111.", or "foo1baz2." are ok
-   (and (looking-back "\\." (- (point) 1))
-        (not (looking-back "\\_<[[:digit:]]+\\." (line-beginning-position))))
-   ;; After dot in float constant like "1.1." or ".1."
-   (or (looking-back "\\_<[[:digit:]]+\\.[[:digit:]]+\\." (line-beginning-position))
-       (looking-back "\\.[[:digit:]]+\\." (line-beginning-position)))))
+  (let ((limit (line-beginning-position)))
+    (or
+     ;; We can't determine at this point if we can complete on a space
+     (looking-back " " limit)
+     ;; At the end of the symbol, but not the end of int number
+     (and (looking-at "\\_>")
+          (not (looking-back "\\_<\\(0[bo]\\)?[[:digit:]]+" limit))
+          (not (looking-back "\\_<0x[[:xdigit:]]+" limit)))
+     ;; After the dot, but not when it's a dot after int number
+     ;; Although identifiers like "foo1.", "foo111.", or "foo1baz2." are ok
+     (and (looking-back "\\." (- (point) 1))
+          (not (looking-back "\\_<[[:digit:]]+\\." limit)))
+     ;; After dot in float constant like "1.1." or ".1."
+     (or (looking-back "\\_<[[:digit:]]+\\.[[:digit:]]+\\." limit)
+         (looking-back "\\.[[:digit:]]+\\." limit)))))
 
 (defun company-anaconda-prefix ()
   "Grab prefix at point."
@@ -80,14 +83,13 @@
                    (forward-char (length (match-string-no-properties 0)))
                    (point))))
               (symbol (buffer-substring-no-properties start (point))))
-         (if (s-blank-p symbol)
-             (if (string-match-p
+         (if (or (s-ends-with-p "." symbol)
+                 (string-match-p
                   (rx (* space) word-start (or "from" "import") word-end space)
-                  (buffer-substring-no-properties line-start (point)))
-                 (buffer-substring-no-properties line-start (point))
-               'stop)
-           (if (s-ends-with-p "." symbol)
-               (cons symbol t)
+                  (buffer-substring-no-properties line-start (point))))
+             (cons symbol t)
+           (if (s-blank-p symbol)
+               'stop
              symbol)))))
 
 (defun company-anaconda-candidates (callback given-prefix)
