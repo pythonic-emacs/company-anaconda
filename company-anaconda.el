@@ -30,6 +30,7 @@
 (require 'company)
 (require 'python)
 (require 'cl-lib)
+(require 'rx)
 (require 'dash)
 (require 's)
 
