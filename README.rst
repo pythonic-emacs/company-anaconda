@@ -1,12 +1,18 @@
 .. |melpa| image:: http://melpa.org/packages/company-anaconda-badge.svg
     :target: http://melpa.org/#/company-anaconda
     :alt: Melpa
+.. |melpa-stable| image:: https://stable.melpa.org/packages/company-anaconda-badge.svg
+    :target: https://stable.melpa.org/#/company-anaconda
+    :alt: Melpa-Stable
+.. |CI| image:: https://github.com/pythonic-emacs/company-anaconda/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/pythonic-emacs/company-anaconda/actions/workflows/test.yml
+    :alt: CI
 
 ================
 Company anaconda
 ================
 
-|melpa|
+|melpa| |melpa-stable| |CI|
 
 Anaconda_ backend for company-mode_.
 
