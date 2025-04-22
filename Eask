@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "company-anaconda"
          "0.2.0"
          "Anaconda backend for company-mode")
